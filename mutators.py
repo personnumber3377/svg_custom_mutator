@@ -7,7 +7,9 @@ import string
 from attribute_handlers import *
 
 FLOAT_CHANCE = 0.5 # Probability to return a float from the next function.
-MAX_INTEGER = 1000
+#MAX_INTEGER = 1000
+
+MAX_INTEGER = (18446744073709551616) * 10 # Some very large number
 
 
 
