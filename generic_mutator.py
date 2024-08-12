@@ -5,11 +5,15 @@ import string as string_mod # string.printable
 MAX_REPEAT_COUNT = 20
 
 def remove_substring(string: str) -> str:
+	if not string:
+		return string
 	start_index = random.randrange(max(len(string)-1, 1))
 	end_index = random.randrange(start_index, len(string))
 	return string[:start_index] + string[end_index:]
 
 def multiply_substring(string: str) -> str:
+	if not string:
+		return string
 	start_index = random.randrange(max(len(string)-1, 1))
 	end_index = random.randrange(start_index, len(string))
 	substr = string[start_index:end_index]
@@ -18,7 +22,8 @@ def multiply_substring(string: str) -> str:
 
 def add_character(string: str) -> str:
 	#if len(string)-1 >= 1:
-
+	if not string:
+		return random.choice(string_mod.printable)
 	where_to_place = random.randrange(max(len(string)-1, 1))
 	
 	return string[:where_to_place] + random.choice(string_mod.printable) + string[where_to_place:]
