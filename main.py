@@ -88,6 +88,9 @@ def mutate_func(data: str) -> str: # Main mutation function.
 
 	return mutated_contents
 
+def fuzz_count(buf):
+	return 1000 # Always run a thousand times for each input. This is such that we do not end up wasting too much time on non-interesting inputs.
+
 def fuzz(buf, add_buf, max_size): # Main mutation function.
 
 	#fh = open("fuck.svg", "wb")
