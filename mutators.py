@@ -6,6 +6,7 @@ import random
 import string
 from attribute_handlers import *
 import strict_values
+from generic_mutator import *
 
 FLOAT_CHANCE = 0.5 # Probability to return a float from the next function.
 #MAX_INTEGER = 1000
@@ -70,8 +71,8 @@ def mut_string(string: str, attribute=None) -> str: # Mutate string.
 			return attribute_handler(string) # Call the attribute handler.
 
 
+	return mutate_generic(string) # Just mutate as a regular string instead...
 
-
-	return rand_string() #.encode("utf-8")
+	#return rand_string() #.encode("utf-8")
 
 
