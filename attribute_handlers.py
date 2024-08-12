@@ -156,7 +156,7 @@ def points_handler(original: str): # Generate a list of points.
 	num_points = random.randrange(1, 100)
 	out = []
 	for _ in range(num_points):
-		out.append(str(gen_int())+","+str(gen_int()))
+		out.append(str(mutators.gen_int())+","+str(mutators.gen_int()))
 	return " ".join(out)
 
 
