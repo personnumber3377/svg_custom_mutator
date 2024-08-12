@@ -67,12 +67,12 @@ def mutate_func(data: str) -> str: # Main mutation function.
 
 		root = ET.fromstring(data)
 	except ET.ParseError: # Invalid shit.
-		fh = open("paskaoof.svg", "wb")
-		fh.write(data.encode("utf-8"))
-		fh.close()
+		#fh = open("paskaoof.svg", "wb")
+		#fh.write(data.encode("utf-8"))
+		#fh.close()
 
-		print("Encountered xml.etree.ElementTree.ParseError!!!")
-		assert False
+		#print("Encountered xml.etree.ElementTree.ParseError!!!")
+		#assert False
 		return data.encode("utf-8")
 
 	#fh = open("inputshit.svg", "wb")
