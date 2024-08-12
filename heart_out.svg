@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000">
+  <g fill="red" transform="">
+    <path id="heart" d="M 10,10 h 10"></path>
+  <use href="#heart" fill="none" stroke="red"></use>
+</g>
+
+  <use href="#heart" fill="none" stroke="red"></use>
+</svg>

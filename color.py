@@ -1,6 +1,7 @@
 
 # This file is responsible to generate different colors.
 
+import random
 
 all_colors = ["black", "red", "blue", "navy"] # Just some colors
 

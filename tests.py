@@ -36,11 +36,27 @@ def test_gen_transformation():
 
 	return
 
+def test_path_handler():
+
+	for _ in range(100):
+
+		print(path_handler(""))
+
+	return
+
+def test_points_handler():
+
+	for _ in range(100):
+		print(points_handler(""))
+	return
+
 if __name__=="__main__":
 
 	test_get_all_paths()
 	test_split_transformation()
 	test_gen_transformation()
+	test_path_handler()
+	test_points_handler()
 
 	print("[+] All tests passed!!!")
 

@@ -63,6 +63,9 @@ def mutate(data: str) -> str: # Main mutation function.
 	mutated_contents = ET.tostring(root, encoding="utf-8", short_empty_elements=False) # Convert back to string representation. Preserve empty elements.
 	return mutated_contents
 
+
+
+
 if __name__=="__main__":
 	# Just take a file from sys.argv[1] and then open it, then mutate it once, then save it in sys.argv[2]
 

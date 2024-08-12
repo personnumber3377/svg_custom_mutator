@@ -4,6 +4,7 @@
 from utils import *
 from mutators import *
 from color import *
+import mutators
 
 # numeric
 
@@ -31,7 +32,10 @@ def split_transformations(transformation_string: str) -> list: # Split on stuff.
 	res = [((transformation_string))[cut_indexes[i]+1:cut_indexes[i+1]] for i in range(len(cut_indexes)-1)]
 	#print("res == "+str(res))
 	#assert res[0][0] == " "
-
+	if res == "": # The result is an empty string, just return empty
+		return [""]
+	if transformation_string == "":
+		return [res[0]]
 	res[0] = transformation_string[0] + res[0]
 
 	return res
@@ -43,7 +47,7 @@ def gen_one_trans_func(): # Generate one transformation function expression.
 	rand_func = random.choice(list(funcs_and_num_of_arguments.keys()))
 	num_args = funcs_and_num_of_arguments[rand_func]
 
-	args = [numeric() for _ in range(num_args)] # Create argument strings.
+	args = [mutators.numeric() for _ in range(num_args)] # Create argument strings.
 	return rand_func + "(" + " ".join(args)+")"
 
 
@@ -59,7 +63,7 @@ def gen_transformation():
 
 	# numeric creates a random thing.
 
-	amount_of_expressions = random.randrange(5)
+	amount_of_expressions = random.randrange(1, 5)
 
 	out = []
 
@@ -95,7 +99,7 @@ def mut_transform(original: str) -> str: # "transform" attribute
 
 			# Remove a random one from them.
 
-			function_statements.pop(random.randrange(len(split_transformations)))
+			function_statements.pop(random.randrange(len(function_statements)))
 
 			res = " ".join(function_statements) # Join them back together.
 
@@ -118,14 +122,42 @@ def generate_comma_list():
 
 	max_terms = 5 # Maximum number of subsequent things.
 
-	num_vals = random.randrange()
+	num_vals = random.randrange(1, max_terms)
 
+	return ",".join([mutators.numeric() for _ in range(num_vals)])
+
+
+
+MAX_PATH_TERMS = 10
 
 def path_handler(original: str): # Generate a "path" expression.
 
 	path_alphabet = "MmLlHhVvCcSsQqTtAaZz" # All valid path commands.
 
+	path_terms = random.randrange(1, MAX_PATH_TERMS)
 
+	out = []
+
+	for _ in range(path_terms):
+
+		# First the operator.
+
+		out.append(random.choice(path_alphabet))
+
+		# Then the "arguments" aka the comma separated list of values.
+
+		out.append(generate_comma_list())
+
+	return " ".join(out)
+
+
+
+def points_handler(original: str): # Generate a list of points.
+	num_points = random.randrange(1, 100)
+	out = []
+	for _ in range(num_points):
+		out.append(str(gen_int())+","+str(gen_int()))
+	return " ".join(out)
 
 
 
@@ -133,5 +165,6 @@ attribute_funcs = {"transform": mut_transform,
 					"stroke": gen_color,
 					"flood-color": gen_color,
 					"lighting-color": gen_color,
-					"d": path_handler}
+					"d": path_handler,
+					"points": points_handler}
 
