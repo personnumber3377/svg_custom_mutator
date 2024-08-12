@@ -96,7 +96,7 @@ def fuzz(buf, add_buf, max_size): # Main mutation function.
 	#fh = open("fuck.svg", "wb")
 	#fh.write(buf)
 	#fh.close()
-
+	original_buf = copy.deepcopy(buf)
 	try:
 
 		# First decode to ascii

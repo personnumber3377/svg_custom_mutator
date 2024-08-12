@@ -5,6 +5,7 @@ from utils import *
 from mutators import *
 from color import *
 import mutators
+import strict_values
 
 # numeric
 
@@ -19,10 +20,10 @@ def split_transformations(transformation_string: str) -> list: # Split on stuff.
 		if char == " " and not in_brace: # We are not in brackets and we have encountered a space character, therefore split on this index.
 			cut_indexes.append(i)
 		elif char == "(":
-			assert in_brace == False # We shouldn't find another opening brace when we have already encountered it without a closing brace.
+			#assert in_brace == False # We shouldn't find another opening brace when we have already encountered it without a closing brace.
 			in_brace = True
 		elif char == ")":
-			assert in_brace == True
+			#assert in_brace == True
 			in_brace = False
 
 	cut_indexes = [0] + cut_indexes + [1000000]

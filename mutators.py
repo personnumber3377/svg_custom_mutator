@@ -5,6 +5,7 @@ from utils import *
 import random
 import string
 from attribute_handlers import *
+import strict_values
 
 FLOAT_CHANCE = 0.5 # Probability to return a float from the next function.
 #MAX_INTEGER = 1000
@@ -52,6 +53,12 @@ def mut_string(string: str, attribute=None) -> str: # Mutate string.
 	# Now we know that the string doesn't represent any kind of numeric value (either integer or float), so let's go through all of the attributes strings and figure out if there are special handlers for them, if not, then just return a completely random string as a fallback.
 
 	if attribute != None: # The attribute string exists.
+		
+		# First try to lookup at the strict values thing...
+		if attribute in strict_values.strict_values_dict.keys():
+			possible_vals = (strict_values.strict_values_dict)[attribute]
+			return random.choice(possible_vals)
+
 		# Try to lookup a handler.
 		#x = 0
 		if attribute in attribute_funcs.keys():

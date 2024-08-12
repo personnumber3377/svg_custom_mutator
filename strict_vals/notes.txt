@@ -1,0 +1,5 @@
+Here is the entire line: shape-rendering: auto | optimizeSpeed | crispEdges |</div>
+Here is the entire line: shape-rendering = auto | optimizeSpeed | c</div>
+Here is the entire line: font-size-adjust: number|none|initial|inherit</div>
+Here is the entire line: {{arrayexpression | filter: expression : comparator : anyPropertyKey}} Parameter</div>
+
