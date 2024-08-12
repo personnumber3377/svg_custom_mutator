@@ -2,6 +2,8 @@
 import random
 import string as string_mod # string.printable
 
+MAX_REPEAT_COUNT = 20
+
 def remove_substring(string: str) -> str:
 	start_index = random.randrange(max(len(string)-1, 1))
 	end_index = random.randrange(start_index, len(string))
@@ -12,7 +14,7 @@ def multiply_substring(string: str) -> str:
 	end_index = random.randrange(start_index, len(string))
 	substr = string[start_index:end_index]
 	where_to_place = random.randrange(max(len(string)-1, 1))
-	return string[:where_to_place] + substr + string[where_to_place:]
+	return string[:where_to_place] + (substr * random.randrange(MAX_REPEAT_COUNT)) + string[where_to_place:]
 
 def add_character(string: str) -> str:
 	#if len(string)-1 >= 1:
