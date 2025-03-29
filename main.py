@@ -91,12 +91,20 @@ def mutate_func(data: str) -> str: # Main mutation function.
 def fuzz_count(buf):
 	return 1000 # Always run a thousand times for each input. This is such that we do not end up wasting too much time on non-interesting inputs.
 
-def fuzz(buf, add_buf, max_size): # Main mutation function.
+def debug(string: str) -> None:
+	fh = open("C:\\Users\\elsku\\mutator_log.txt", "a+")
+	fh.write(string)
+	fh.close()
+	return
+
+def fuzz_actual(buf, add_buf, max_size): # Main mutation function.
 
 	#fh = open("fuck.svg", "wb")
 	#fh.write(buf)
 	#fh.close()
 	original_buf = copy.deepcopy(buf)
+
+	# debug("Called custom mutator!!!!!")
 	try:
 
 		# First decode to ascii
@@ -120,6 +128,16 @@ def fuzz(buf, add_buf, max_size): # Main mutation function.
 		print("Warning! Tried to pass invalid data to the mutation function!")
 		return buf # Just return the original shit.
 
+
+# def fuzz(buf, bufsize):
+def fuzz(buf):
+	# debug("Called fuzz...")
+	thing = bytearray(buf)
+	res = fuzz_actual(thing, 0, 100000)
+	res = bytes(res)
+	assert isinstance(res, bytes)
+	# debug("Returning from fuzz...")
+	return res
 
 def deinit(): # Needed by AFL++ for some reason... (DO NOT REMOVE!)
 	pass
