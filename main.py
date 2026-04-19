@@ -143,6 +143,26 @@ def deinit(): # Needed by AFL++ for some reason... (DO NOT REMOVE!)
 	pass
 
 
+
+def mutate_main(in_bytes: bytes) -> bytes:
+	contents = in_bytes.decode("utf-8") # Convert to normal string.
+	print("contents == "+str(contents))
+	print("type(contents) == "+str(type(contents)))
+	contents = mutate_func(contents) # Mutate.
+	print("type(contents) == "+str(type(contents)))
+	#contents = contents.encode("utf-8") # Convert back to bytes
+
+	# The xml library adds "ns0:" strings everywhere for god knows what reason. I couldn't find anything in the docs about it so just replace all instances of that string with an empty string.
+
+
+	contents = contents.replace(b"</ns0:", b"</")
+	contents = contents.replace(b"<ns0:", b"<")
+	contents = contents.replace(b":ns0", b"")
+	assert b"ns0" not in contents
+
+	# Return the mutated data...
+	return contents
+
 if __name__=="__main__":
 	# Just take a file from sys.argv[1] and then open it, then mutate it once, then save it in sys.argv[2]
 
