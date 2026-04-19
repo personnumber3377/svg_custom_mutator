@@ -1,0 +1,4 @@
+000000EE06BA 000000EE06BAD &L"<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:ns1=\"http://www.w3.org/1999/xlink\" style=\"font: 16px srif\">\n  <path id=\"p\" d=\"M 100,100 h 100\" />\n  <text><a><textPath ns1:href=\"#p\">hello</textPath></a></text>\n</svg>"
+
+
+
