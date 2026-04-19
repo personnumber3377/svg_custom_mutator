@@ -6,16 +6,21 @@ import subprocess
 from pathlib import Path
 import xml.etree.ElementTree as ET
 import main
+import random
 
 # === CONFIG ===
 TEMPLATE_DOCX = "template.docx"
 OUTPUT_DOCX   = "fuzzed.docx"
 # SVG_MUTATOR   = ["python3", "main.py"]
-BASE_SVG      = "seed.svg"
+# BASE_SVG      = "seed.svg"
 NUM_SVGS      = 220
 
 WORD_MEDIA_DIR = "word/media"
 RELS_FILE = "word/_rels/document.xml.rels"
+
+# Corpus files...
+CORPUS_DIR = "C:\\Users\\elsku\\svg_corpus\\"
+CORPUS_FILES = os.listdir(CORPUS_DIR)
 
 # === UTIL ===
 
@@ -53,6 +58,12 @@ def generate_svgs(media_dir):
         out_svg = media_dir / f"fuzz{i}.svg"
         # image2.svg
         # out_svg = media_dir / f"image2.svg"
+
+        # Get the base svg file...
+        BASE_SVG = random.choice(CORPUS_FILES)
+        BASE_SVG = CORPUS_DIR + BASE_SVG # Add the corpus stuff...
+        print("base svg: "+str(BASE_SVG))
+
         mutate_svg(BASE_SVG, str(out_svg))
         generated.append(f"media/fuzz{i}.svg")
         # generated.append(f"media/image2.svg")
