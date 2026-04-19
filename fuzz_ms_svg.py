@@ -10,9 +10,9 @@ import main
 # === CONFIG ===
 TEMPLATE_DOCX = "template.docx"
 OUTPUT_DOCX   = "fuzzed.docx"
-# SVG_MUTATOR   = ["python3", "main.py"]  # your mutator
+# SVG_MUTATOR   = ["python3", "main.py"]
 BASE_SVG      = "seed.svg"
-NUM_SVGS      = 10  # start small, increase later
+NUM_SVGS      = 220
 
 WORD_MEDIA_DIR = "word/media"
 RELS_FILE = "word/_rels/document.xml.rels"
@@ -50,40 +50,14 @@ def generate_svgs(media_dir):
     generated = []
 
     for i in range(NUM_SVGS):
-        # out_svg = media_dir / f"fuzz{i}.svg"
+        out_svg = media_dir / f"fuzz{i}.svg"
         # image2.svg
-        out_svg = media_dir / f"image2.svg"
+        # out_svg = media_dir / f"image2.svg"
         mutate_svg(BASE_SVG, str(out_svg))
-        # generated.append(f"media/fuzz{i}.svg")
-        generated.append(f"media/image2.svg")
+        generated.append(f"media/fuzz{i}.svg")
+        # generated.append(f"media/image2.svg")
 
     return generated
-
-def update_relationships(rels_path, new_svgs):
-    tree = ET.parse(rels_path)
-    root = tree.getroot()
-
-    # namespace fix
-    ns = {"r": "http://schemas.openxmlformats.org/package/2006/relationships"}
-
-    existing_ids = set()
-    for rel in root.findall("r:Relationship", ns):
-        existing_ids.add(rel.attrib["Id"])
-
-    next_id = 1000  # avoid collisions
-
-    for svg in new_svgs:
-        rid = f"rId{next_id}"
-        next_id += 1
-
-        rel = ET.Element("Relationship")
-        rel.set("Id", rid)
-        rel.set("Type", "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image")
-        rel.set("Target", svg)
-
-        root.append(rel)
-
-    tree.write(rels_path, xml_declaration=True, encoding="UTF-8")
 
 # === MAIN ===
 
