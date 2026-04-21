@@ -185,9 +185,11 @@ def update_coverage_and_is_interesting():
     # Check if the coverage file is interesting...
     current_coverage = parse_coverage()
 
+    global coverage
+    
     new_coverage = current_coverage - coverage
     if new_coverage != set(): # Non-empty so new coverage was found...
-        global coverage
+        
         coverage = coverage + new_coverage # Add those to the hash map...
         return True
     return False
@@ -195,7 +197,9 @@ def update_coverage_and_is_interesting():
 corpus = []
 
 def add_sample_to_corpus():
-    fh = open()
+    # Stub for now...
+    return
+    # fh = open()
 
 # Main fuzzing loop...
 def fuzz():
@@ -208,6 +212,8 @@ def fuzz():
         if update_coverage_and_is_interesting():
             # Add the sample to the current corpus...
             # global corpus
+            print("Interesting sample!")
+            print("Length of coverage: "+str(len(coverage)))
             add_sample_to_corpus()
     return
 
