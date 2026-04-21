@@ -25,8 +25,12 @@ WORD_MEDIA_DIR = "word/media"
 RELS_FILE = "word/_rels/document.xml.rels"
 
 # Corpus files...
-CORPUS_DIR = "C:\\Users\\elsku\\svg_corpus\\"
-CORPUS_FILES = os.listdir(CORPUS_DIR)
+INIT_CORPUS_DIR = "C:\\Users\\elsku\\svg_corpus\\"
+INIT_CORPUS_FILES = os.listdir(INIT_CORPUS_DIR)
+
+# Directory where to store files that trigger new "coverage" in the MSOSVG.dll file...
+INTERESTING_DIRECTORY = "C:\\Users\\elsku\\svg_interesting\\"
+
 
 # === UTIL ===
 
@@ -66,9 +70,9 @@ def generate_svgs(media_dir):
         # out_svg = media_dir / f"image2.svg"
 
         # Get the base svg file...
-        BASE_SVG = random.choice(CORPUS_FILES)
-        BASE_SVG = CORPUS_DIR + BASE_SVG # Add the corpus stuff...
-        print("base svg: "+str(BASE_SVG))
+        BASE_SVG = random.choice(INIT_CORPUS_FILES)
+        BASE_SVG = INIT_CORPUS_DIR + BASE_SVG # Add the corpus stuff...
+        # print("base svg: "+str(BASE_SVG))
 
         mutate_svg(BASE_SVG, str(out_svg))
         generated.append(f"media/fuzz{i}.svg")
@@ -172,10 +176,22 @@ def parse_coverage():
     fh = open(COVERAGE_FILE, "r")
     lines = fh.readlines()
     fh.close()
+    print("lines: "+str(lines))
     # Now check for "MSOSVG.DLL+"
     # cov = set()
-    header = "MSOSVG.DLL+"
-    cov = [int(string[len(header):], 16) for string in lines if string.startswith(header)]
+    header = "MSOSVG.dll+"
+    # cov = [int(string[len(header):], 16) for string in lines if string.startswith(header)]
+    cov = []
+    for line in lines:
+        print("line: "+str(line))
+        if line.startswith(header):
+            l = line[len(header):]
+            if l[-1] == "\n":
+                l = l[:-1] # Get rid of newline...
+            print("l: "+str(l))
+            integer = int(l, 16)
+            cov.append(integer)
+    print("Coverage: "+str(cov))
     cov = set(cov)
     return cov
 
@@ -184,20 +200,25 @@ def parse_coverage():
 def update_coverage_and_is_interesting():
     # Check if the coverage file is interesting...
     current_coverage = parse_coverage()
-
+    print("Cot this coverage here: "+str(current_coverage))
     global coverage
     
     new_coverage = current_coverage - coverage
+    print("new_coverage: "+str(new_coverage))
     if new_coverage != set(): # Non-empty so new coverage was found...
         
-        coverage = coverage + new_coverage # Add those to the hash map...
+        coverage = coverage | new_coverage # Add those to the hash map...
         return True
     return False
 
 corpus = []
 
 def add_sample_to_corpus():
-    # Stub for now...
+    # This just copies the "fuzzed.docx" file to the "interesting" directory...
+    # Save to a random integer filename in the interesting directory...
+    cmd = "copy "+str(FUZZ_INPUT)+" "+INTERESTING_DIRECTORY+str(random.randrange(10_000_000))+".svg"
+    print("Running "+str(cmd))
+    os.system(cmd)
     return
     # fh = open()
 
@@ -209,6 +230,7 @@ def fuzz():
         # Then try to run the program
         run_program()
         # Now try to determine whether or not that sample was interesting or not...
+        print("Trying to determine whether or not there is new coverage...")
         if update_coverage_and_is_interesting():
             # Add the sample to the current corpus...
             # global corpus
