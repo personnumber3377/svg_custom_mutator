@@ -14,6 +14,9 @@ import time
 # === CONFIG ===
 TEMPLATE_DOCX = "template.docx"
 OUTPUT_DOCX   = "fuzzed.docx"
+
+FUZZ_INPUT = "C:\\Users\\elsku\\svg_custom_mutator\\fuzzed.docx"
+
 # SVG_MUTATOR   = ["python3", "main.py"]
 # BASE_SVG      = "seed.svg"
 NUM_SVGS      = 220
@@ -99,14 +102,29 @@ def build_fuzzed_docx():
 # Run the program...
 
 SCROLL_DOWN_AMOUNT = -500
-STEPS = 1000
+STEPS = 50
 TIME_STEP = 0.01
+PROC_TIMEOUT = 100.0
+INITIAL_WAIT_TIME = 100.0
+
+COVERAGE_FILE = "C:\\Users\\elsku\\svg_custom_mutator\\coverage.bin"
+
+COVERAGE_CMD = [
+        "C:\\Users\\elsku\\TinyInst\\build\\Release\\litecov.exe",
+        "-instrument_module", "MSOSVG.dll",
+        "-coverage_file", COVERAGE_FILE, # Coverage output file...
+        "--",
+        "C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE",
+        "/n",
+        "/q",
+        "C:\\Users\\elsku\\svg_custom_mutator\\fuzzed.docx"
+    ]
 
 def run_program():
     # The file is the current directory and then plus fuzzed.docx...
     # proc = subprocess.Popen(["your_program.exe", "input.file"])
     
-    proc = subprocess.Popen(["C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE", "C:\\Users\\elsku\\svg_custom_mutator\\fuzzed.docx"], timeout=5)
+    # proc = subprocess.Popen(["C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE", "C:\\Users\\elsku\\svg_custom_mutator\\fuzzed.docx"])
     
     '''
     try:
@@ -115,13 +133,27 @@ def run_program():
         proc.kill()
     '''
 
+    '''
+    proc = subprocess.Popen([
+        "litecov.exe",
+        "-instrument_module", "MSOSVG.dll",
+        "--",
+        "C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE",
+        "C:\\Users\\elsku\\svg_custom_mutator\\fuzzed.docx"
+    ])
+    '''
+
+    # Actually get coverage of the process and specifically the MSOSVG.dll file...
+    proc = subprocess.Popen(COVERAGE_CMD)
+
     try:
-        time.sleep(5.0) # Wait 5 seconds for word to open...
+        # time.sleep(INITIAL_WAIT_TIME) # Wait 5 seconds for word to open...
         # Now scroll slowly...
-        for _ in range(STEPS):
+        for i in range(STEPS):
+            print(i)
             pyautogui.scroll(SCROLL_DOWN_AMOUNT)
             time.sleep(TIME_STEP)
-        rc = proc.wait()
+        rc = proc.wait(timeout=PROC_TIMEOUT)
 
         print("return code:", rc)
 
@@ -134,14 +166,50 @@ def run_program():
         proc.kill()
         return
 
-# Main fuzzing loop...
+coverage = set() # Empty set
 
+def parse_coverage():
+    fh = open(COVERAGE_FILE, "r")
+    lines = fh.readlines()
+    fh.close()
+    # Now check for "MSOSVG.DLL+"
+    # cov = set()
+    header = "MSOSVG.DLL+"
+    cov = [int(string[len(header):], 16) for string in lines if string.startswith(header)]
+    cov = set(cov)
+    return cov
+
+# Check if there is new coverage... if there is then this returns True
+
+def update_coverage_and_is_interesting():
+    # Check if the coverage file is interesting...
+    current_coverage = parse_coverage()
+
+    new_coverage = current_coverage - coverage
+    if new_coverage != set(): # Non-empty so new coverage was found...
+        global coverage
+        coverage = coverage + new_coverage # Add those to the hash map...
+        return True
+    return False
+
+corpus = []
+
+def add_sample_to_corpus():
+    fh = open()
+
+# Main fuzzing loop...
 def fuzz():
     while True: # Main fuzzing loop...
         # First construct the fuzzed docx
         build_fuzzed_docx()
         # Then try to run the program
         run_program()
+        # Now try to determine whether or not that sample was interesting or not...
+        if update_coverage_and_is_interesting():
+            # Add the sample to the current corpus...
+            # global corpus
+            add_sample_to_corpus()
+    return
 
 if __name__ == "__main__":
     fuzz()

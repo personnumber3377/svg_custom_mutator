@@ -1,0 +1,884 @@
+api-ms-win-core-memory-l1-1-0.dll
+api-ms-win-core-libraryloader-l1-1-0.dll
+ntdll.dll
+KERNEL32.DLL
+MsftOfcThm_
+_Stroke
+MsftOfcResponsive_Stroke_
+_Fill
+MsftOfcResponsive_Fill_
+Microsoft.Office.Graphics.TestGate.UseTextLengthSVG
+Microsoft.Office.Graphics.TestGate.PositionEachGlyphSVG
+lang
+title
+type
+accent-height
+accumulate
+additive
+alignment-baseline
+alphabetic
+amplitude
+arabic-form
+ascent
+attributeName
+attributeType
+azimuth
+baseFrequency
+baseProfile
+baseline-shift
+bbox
+begin
+bias
+calcMode
+cap-height
+class
+clip
+clip-path
+clip-rule
+clipPathUnits
+color
+color-interpolation
+color-interpolation-filters
+color-profile
+color-rendering
+contentScriptType
+contentStyleType
+cursor
+descent
+diffuseConstant
+direction
+display
+divisor
+dominant-baseline
+edgeMode
+elevation
+enable-background
+exponent
+externalResourcesRequired
+fill
+fill-opacity
+fill-rule
+filter
+filterRes
+filterUnits
+flood-color
+flood-opacity
+font
+font-family
+font-size
+font-size-adjust
+font-stretch
+font-style
+font-variant
+font-weight
+format
+from
+glyph-name
+glyph-orientation-horizontal
+glyph-orientation-vertical
+glyphRef
+gradientTransform
+gradientUnits
+hanging
+height
+horiz-adv-x
+horiz-origin-x
+horiz-origin-y
+ideographic
+image-rendering
+intercept
+kernelMatrix
+kernelUnitLength
+kerning
+keyPoints
+keySplines
+keyTimes
+lengthAdjust
+letter-spacing
+lighting-color
+limitingConeAngle
+local
+marker
+marker-end
+marker-mid
+marker-start
+markerHeight
+markerUnits
+markerWidth
+mask
+maskContentUnits
+maskUnits
+mathematical
+media
+method
+mode
+name
+numOctaves
+offset
+onabort
+onactivate
+onbegin
+onclick
+onend
+onerror
+onfocusin
+onfocusout
+onload
+onmousedown
+onmousemove
+onmouseout
+onmouseover
+onmouseup
+onrepeat
+onresize
+onscroll
+onunload
+onzoom
+opacity
+operator
+order
+orient
+orientation
+origin
+overflow
+overline-position
+overline-thickness
+panose-1
+path
+pathLength
+patternContentUnits
+patternTransform
+patternUnits
+pointer-events
+points
+pointsAtX
+pointsAtY
+pointsAtZ
+preserveAlpha
+preserveAspectRatio
+primitiveUnits
+radius
+refX
+refY
+rendering-intent
+repeatCount
+repeatDur
+requiredExtensions
+requiredFeatures
+restart
+result
+rotate
+scale
+seed
+shape-rendering
+slope
+spacing
+specularConstant
+specularExponent
+spreadMethod
+startOffset
+stdDeviation
+stemh
+stemv
+stitchTiles
+stop-color
+stop-opacity
+strikethrough-position
+strikethrough-thickness
+string
+stroke
+stroke-dasharray
+stroke-dashoffset
+stroke-linecap
+stroke-linejoin
+stroke-miterlimit
+stroke-opacity
+stroke-width
+style
+surfaceScale
+systemLanguage
+tableValues
+target
+targetX
+targetY
+text-anchor
+text-decoration
+text-rendering
+textLength
+transform
+underline-position
+underline-thickness
+unicode
+unicode-bidi
+unicode-range
+units-per-em
+v-alphabetic
+v-hanging
+v-ideographic
+v-mathematical
+values
+version
+vert-adv-y
+vert-origin-x
+vert-origin-y
+viewBox
+viewTarget
+visibility
+white-space
+width
+widths
+word-spacing
+writing-mode
+x-height
+xChannelSelector
+actuate
+arcrole
+href
+role
+show
+base
+space
+yChannelSelector
+zoomAndPan
+%.0lf
+ id="
+ class="
+SourceAlpha
+BackgroundImage
+SourceGraphic
+StrokePaint
+BackgroundAlpha
+FillPaint
+Arial
+xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+<defs>
+pattern
+</defs>
+</g>
+<svg
+ width="
+<style>
+</style>
+ y="
+ viewBox="
+ height="
+ x="
+</symbol>
+<defs
+</svg>
+<symbol
+SH_ErrorCode
+Throw OException
+Unsupported command list that doesn't support streaming
+Unsupported gradient type: likely Path Gradient.
+Unable to get text from DWRITE_GLYPH_RUN
+Unsupported brush type
+Bitmap resource lost
+Unsupported radial gradient: the focus is outside the gradient area.
+Unable to get IDWriteFontFace from glyph run's font face
+Null font face in glyph run
+Locale does not exist
+en-us
+Unsupported geometry
+sans-serif
+_MSFontService
+Unable to get IDWriteFontFamily from font
+Unsupported command
+Gradient meshes not yet supported.
+Unsupported transparent Clear after drawing visible content
+Arial_MSFontService
+Unsupported image type
+Unsupported effect
+Invalid font stretch
+Invalid font weight
+Invalid font style
+-large
+xx-large
+xx-small
+x-small
+true
+ultra-condensed
+ultra-expanded
+table-column-group
+table-footer-group
+table-cell
+table-column
+table-row-group
+tb-rl
+table-header-group
+table-row
+semi-condensed
+semi-expanded
+rl-tb
+run-in
+table-caption
+small-caps
+list-item
+lr-tb
+inline
+inline-table
+bidi-override
+auto
+extra-expanded
+false
+default
+extra-condensed
+wider
+wrap
+turbulence
+visible
+userSpaceOnUse
+StrokePaint
+strokeWidth
+super
+table
+SourceGraphic
+start
+stitch
+square
+sRGB
+scroll
+smooth
+SourceAlpha
+small
+smaller
+round
+screen
+saturate
+preserve
+pre-line
+pre-wrap
+repeat
+reflect
+over
+pixelated
+objectBoundingBox
+oblique
+optimizeSpeed
+optimizeQuality
+none
+narrower
+noStitch
+nowrap
+nonzero
+normal
+medium
+matrix
+miter
+multiply
+middle
+linear
+linearRGB
+marker
+luminanceToAlpha
+italic
+inherit
+initial
+lighten
+lighter
+large
+larger
+hueRotate
+hidden
+identity
+fractalNoise
+FillPaint
+gamma
+embed
+discrete
+duplicate
+expanded
+erode
+evenodd
+crisp-edges
+condensed
+dilate
+currentColor
+darken
+bolder
+butt
+block
+bold
+collapse
+compact
+auto-start-reverse
+arithmetic
+atop
+baseline
+bevel
+BackgroundAlpha
+BackgroundImage
+http://www.w3.org/2000/svg
+http://www.w3.org/XML/1998/namespace
+http://www.w3.org/1999/xlink
+altGlyphDef
+altGlyph
+animateMotion
+animateColor
+animate
+altGlyphItem
+defs
+clipPath
+circle
+animateTransform
+feColorMatrix
+feBlend
+ellipse
+desc
+feDiffuseLighting
+feConvolveMatrix
+feComposite
+feComponentTransfer
+feFuncA
+feFlood
+feDistantLight
+feDisplacementMap
+feGaussianBlur
+feFuncR
+feFuncG
+feFuncB
+feMorphology
+feMergeNode
+feMerge
+feImage
+feSpotLight
+feSpecularLighting
+fePointLight
+feOffset
+font-face-format
+font-face
+feTurbulence
+feTile
+foreignObject
+font-face-uri
+font-face-src
+font-face-name
+image
+hkern
+glyph
+missing-glyph
+metadata
+linearGradient
+line
+radialGradient
+polyline
+polygon
+mpath
+stop
+script
+rect
+text
+symbol
+switch
+tspan
+tref
+textPath
+vkern
+view
+image/jpeg;base64,
+image/png;base64,
+data:
+text/css
+img/jpeg;base64,
+img/png;base64,
+data:image/jpeg;base64,
+data:image/png;base64,
+http://www.w3.org/TR/SVG11/feature#
+org.w3c.svg
+SVGDOM-dynamic
+CoreAttribute
+SVGDOM-animation
+SVG-dynamic
+SVGDOM-static
+SVG-animation
+SVGDOM
+SVG-static
+ViewportAttribute
+Shape
+Image
+Style
+ContainerAttribute
+ConditionalProcessing
+Structure
+BasicStructure
+BasicGraphicsAttribute
+Marker
+OpacityAttribute
+GraphicsAttribute
+PaintAttribute
+BasicPaintAttribute
+Text
+BasicText
+BasicFilter
+DocumentEventsAttribute
+Mask
+Filter
+Pattern
+Clip
+ColorProfile
+Gradient
+View
+Script
+XlinkAttribute
+ExternalResourcesRequired
+Cursor
+Hyperlinking
+GraphicalEventsAttribute
+AnimationEventsAttribute
+Extensibility
+Animation
+Font
+ result="
+table
+ in="
+ in2="
+<feFuncB 
+<feFuncA 
+<feFuncR 
+<feFuncG 
+gamma
+identity
+discrete
+linear
+ offset="
+ amplitude="
+ exponent="
+ slope="
+ intercept="
+ type="
+ tableValues="
+matrix
+saturate
+" />
+<feImage 
+ xlink:href="
+<feGaussianBlur 
+ stdDeviation="
+</feComponentTransfer>
+over
+<feComponentTransfer 
+<feColorMatrix 
+ values="
+hueRotate
+luminanceToAlpha
+ k1="
+ k2="
+<feComposite 
+ operator="
+arithmetic
+atop
+false
+<feConvolveMatrix 
+none
+true
+duplicate
+wrap
+ k3="
+ k4="
+ divisor="
+ targetX="
+ kernelUnitLength="
+ kernelMatrix="
+ edgeMode="
+ preserveAlpha="
+ order="
+ bias="
+<feBlend 
+ mode="
+darken
+lighten
+multiply
+screen
+ targetY="
+normal
+ baseFrequency="
+ seed="
+<feTurbulence 
+ numOctaves="
+stitch
+noStitch
+fractalNoise
+turbulence
+ dx="
+ dy="
+ stitch="
+<feOffset 
+</feMerge>
+erode
+<feMergeNode
+<feMerge 
+ xChannelSelector="
+ yChannelSelector="
+<feDisplacementMap 
+ scale="
+ azimuth="
+ elevation="
+<feFlood 
+<feDistantLight 
+ radius="
+<feTile 
+dilate
+<feMorphology 
+ limitingConeAngle="
+ specularExponent="
+ pointsAtY="
+ pointsAtZ="
+<feSpotLight 
+ pointsAtX="
+<fePointLight 
+ z="
+</feSpecularLighting>
+userSpaceOnUse
+<feSpecularLighting 
+ specularConstant="
+ diffuseConstant="
+</feDiffuseLighting>
+ surfaceScale="
+<feDiffuseLighting 
+</filter>
+ primitiveUnits="
+ filterUnits="
+objectBoundingBox
+<filter 
+<stop offset="
+ spreadMethod="
+ xlink:href="#
+ gradientUnits="
+reflect
+repeat
+<radialGradient
+ cx="
+ y2="
+</linearGradient>
+ y1="
+ x2="
+<linearGradient
+ x1="
+</radialGradient>
+ fx="
+ fy="
+ cy="
+ r="
+<use
+ markerWidth="
+ refY="
+ refX="
+<marker
+strokeWidth
+</use>
+" height="
+" xlink:href="#
+ clipPathUnits="
+<clipPath
+</marker>
+auto
+ orient="
+auto-start-reverse
+ markerUnits="
+ markerHeight="
+<pattern
+</image>
+<image
+</mask>
+ maskContentUnits="
+ maskUnits="
+<mask
+</clipPath>
+</pattern>
+ patternContentUnits="
+ patternUnits="
+AlphaModulateUnary
+AlphaInverse
+AlphaFloor
+AlphaCeiling
+AlphaBiLevel
+Brighten
+Blur
+Blend
+BiLevel
+AlphaReplaceBinary
+AlphaReplaceUnary
+AlphaOutset
+AlphaModulateBinary
+Contrast
+Convolve
+Composite
+ComponentTransfer
+ColorReplace
+ColorMatrix
+ColorBlend
+BumpMap
+Grayscale
+Glyph
+Flood
+FindReplace
+DuoTone
+DisplacementMap
+Darken
+CustomDraw
+RadialGradientFocus
+PathGradient
+Morphology
+Modulate
+Luminance
+Is3D
+Instance
+Video
+Turbulence
+Tint
+Tile
+SVGFill
+Shadow
+Recolor
+Raster
+Take early out flag
+CanRenderAsSVG encountered unsupported props
+InvalidInput
+" y2="
+" x2="
+" y1="
+<path 
+" ry="
+" rx="
+<ellipse cx="
+<line x1="
+" y="
+<rect x="
+ rx="
+ ry="
+" r="
+" cy="
+<circle cx="
+Small
+Large
+http://www.w3.org/2000/svg
+first-child
+link
+visited
+active
+Courier New
+hover
+focus
+IMPORTANT
+xml:space
+serif
+Times New Roman
+cursive
+Comic Sans MS
+fantasy
+Gabriola
+monospace
+linearRGB
+hidden
+visible
+default
+preserve
+inline
+currentColor
+round
+square
+butt
+bevel
+miter
+evenodd
+nonzero
+sRGB
+url(#
+black
+baseline
+inherit
+class
+Unsupported IBrushEffect in SetBrushPropsVisitor
+Unsupported IBrushPathGradient in SetBrushPropsVisitor
+Unsupported IBrushPattern in SetBrushPropsVisitor
+Unsupported IBrushPlaceholder in SetBrushPropsVisitor
+<text
+</a>
+<tspan
+</tspan>
+</text>
+//*[@id="
+NULL
+MaxYMid
+xMidYMid
+xMidYMax
+xMinYMax
+meet
+xMaxYMax
+ preserveAspectRatio="
+slice
+xMidYMin
+xMinYMin
+xMinYMid
+xMaxYMin
+semi-condensed
+condensed
+expanded
+semi-expanded
+ultra-expanded
+extra-expanded
+wider
+narrower
+italic
+small-caps
+oblique
+lighter
+bolder
+extra-condensed
+ultra-condensed
+underline
+tb-rl
+line-through
+overline
+pixelated
+spacingAndGlyphs
+bidi-override
+embed
+middle
+start
+rl-tb
+lr-tb
+BufferOverflow Exception
+Abort Exception
+HResult Exception (0x%X)
+Invalid Param Exception
+Invalid Operation Exception
+OutOfMemory Exception
+ffice
+DelayloadRetryError
+DelayloadRetry
+NumRetries
+DllName
+mso20win32server.dll
+mso20win32client.dll
+VS_VERSION_INFO
+StringFileInfo
+040904E4
+CompanyName
+Microsoft Corporation
+FileDescription
+Microsoft Office SVG support
+FileVersion
+16.0.19822.20086
+InternalName
+MSOSVG
+LegalTrademarks1
+Microsoft
+ is a registered trademark of Microsoft Corporation.
+LegalTrademarks2
+Windows
+ is a registered trademark of Microsoft Corporation.
+OriginalFilename
+MSOSVG.DLL
+ProductName
+Microsoft Office
+ProductVersion
+16.0.19822.20086
+VarFileInfo
+Translation
+SubCA
+Microsoft Office SVG support
+SubCA
+SubCA
+Microsoft Office SVG support
+SubCA
