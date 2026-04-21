@@ -10,6 +10,9 @@ POLL_INTERVAL = 0.33
 CLICK_DELAY = 1.0
 
 # Pixel checks
+
+# x=1098, y=565    and then click on   x=1026, y=567)
+
 CHECKS = [
     {
         "name": "Dialog1",
@@ -18,6 +21,11 @@ CHECKS = [
     },
     {
         "name": "Dialog2",
+        "check_pos": (972, 592),
+        "click_pos": (927, 596),
+    },
+    {
+        "name": "Dialog3",
         "check_pos": (972, 592),
         "click_pos": (927, 596),
     }
