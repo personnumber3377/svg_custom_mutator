@@ -13,6 +13,9 @@ CLICK_DELAY = 1.0
 
 # x=1098, y=565    and then click on   x=1026, y=567)
 
+# x=1099, y=568
+
+
 CHECKS = [
     {
         "name": "Dialog1",
@@ -26,8 +29,8 @@ CHECKS = [
     },
     {
         "name": "Dialog3",
-        "check_pos": (972, 592),
-        "click_pos": (927, 596),
+        "check_pos": (1098, 565),
+        "click_pos": (1026, 567),
     }
 ]
 

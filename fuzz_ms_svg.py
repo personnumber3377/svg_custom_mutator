@@ -171,9 +171,10 @@ def kill_all_word():
         print("kill error:", e)
 
     # small delay to let Windows clean up
-    time.sleep(1.5)
+    time.sleep(0.5)
 
 # === RUN TARGET ===
+'''
 def run_program():
     proc = subprocess.Popen(COVERAGE_CMD)
 
@@ -189,16 +190,113 @@ def run_program():
 
         if rc != 0:
             print("abnormal exit")
-            dst = CRASHES_DIRECTORY + str(random.randrange(10_000_000)) + ".docx"
+            dst = CRASHES_DIRECTORY + str(random.randrange(10_000_000)) + "_" + str(hex(rc))[2:] + ".docx"
             shutil.copy(FUZZ_INPUT, dst)
             kill_all_word()
-            
+
             # exit(1)
 
             return True # Crash, so skip coverage detection...
     except subprocess.TimeoutExpired:
         proc.kill()
         return False
+    return False
+'''
+
+def run_program():
+    proc = subprocess.Popen(
+        COVERAGE_CMD,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        bufsize=1
+    )
+
+    crash_detected = False
+    crash_info = []
+
+    try:
+        start_time = time.time()
+
+        # Read output line-by-line while running UI loop
+        while True:
+            # Read available output without blocking forever
+            line = proc.stdout.readline()
+
+            if line:
+                print(line.strip())
+
+                # === CRASH DETECTION ===
+                if (
+                    "Process crashed" in line or
+                    "Exception at address" in line or
+                    "Access address" in line
+                ):
+                    crash_detected = True
+                    crash_info.append(line.strip())
+
+            # UI interaction loop (unchanged behavior)
+            handle_popups()
+            pyautogui.scroll(SCROLL_DOWN_AMOUNT)
+
+            # Timeout handling
+            if time.time() - start_time > PROC_TIMEOUT:
+                raise subprocess.TimeoutExpired(proc.args, PROC_TIMEOUT)
+
+            # Check if process ended
+            if proc.poll() is not None:
+                break
+
+            time.sleep(TIME_STEP)
+
+        rc = proc.wait()
+
+        print("return code:", rc)
+
+        # === HANDLE CRASH ===
+        if crash_detected:
+            print("[!!!] CRASH DETECTED VIA OUTPUT")
+
+            suffix = "_".join(crash_info).replace(" ", "_")[:100]
+
+            dst = (
+                CRASHES_DIRECTORY +
+                str(random.randrange(10_000_000)) +
+                "_" + suffix +
+                ".docx"
+            )
+
+            shutil.copy(FUZZ_INPUT, dst)
+
+            kill_all_word()
+
+            return True
+
+        # === FALLBACK: abnormal exit ===
+        if rc != 0:
+            print("abnormal exit")
+
+            dst = (
+                CRASHES_DIRECTORY +
+                str(random.randrange(10_000_000)) +
+                "_" + str(hex(rc))[2:] +
+                ".docx"
+            )
+
+            shutil.copy(FUZZ_INPUT, dst)
+
+            kill_all_word()
+
+            return True
+
+    except subprocess.TimeoutExpired:
+        print("[!] Timeout detected")
+
+        proc.kill()
+        kill_all_word()
+
+        return True
+
     return False
 
 # === COVERAGE PARSER ===
@@ -247,6 +345,7 @@ def fuzz():
     iteration = 0
 
     while True:
+        kill_all_word()
         svg_group = build_fuzzed_docx()
         if run_program():
             # Skip coverage detection...
