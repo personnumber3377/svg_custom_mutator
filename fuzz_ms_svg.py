@@ -7,6 +7,9 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 import main
 import random
+import pyautogui
+import time
+
 
 # === CONFIG ===
 TEMPLATE_DOCX = "template.docx"
@@ -93,5 +96,53 @@ def build_fuzzed_docx():
 
         print(f"[+] Generated {OUTPUT_DOCX}")
 
+# Run the program...
+
+SCROLL_DOWN_AMOUNT = -500
+STEPS = 1000
+TIME_STEP = 0.01
+
+def run_program():
+    # The file is the current directory and then plus fuzzed.docx...
+    # proc = subprocess.Popen(["your_program.exe", "input.file"])
+    
+    proc = subprocess.Popen(["C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE", "C:\\Users\\elsku\\svg_custom_mutator\\fuzzed.docx"], timeout=5)
+    
+    '''
+    try:
+        proc.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+    '''
+
+    try:
+        time.sleep(5.0) # Wait 5 seconds for word to open...
+        # Now scroll slowly...
+        for _ in range(STEPS):
+            pyautogui.scroll(SCROLL_DOWN_AMOUNT)
+            time.sleep(TIME_STEP)
+        rc = proc.wait()
+
+        print("return code:", rc)
+
+        # On Windows, many crash exits show up as large unsigned values or negative signed values.
+        if rc != 0:
+            print("abnormal exit")
+            exit(1)
+    except subprocess.TimeoutExpired: # Timeout???
+        # Just kill and return normally...
+        proc.kill()
+        return
+
+# Main fuzzing loop...
+
+def fuzz():
+    while True: # Main fuzzing loop...
+        # First construct the fuzzed docx
+        build_fuzzed_docx()
+        # Then try to run the program
+        run_program()
+
 if __name__ == "__main__":
-    build_fuzzed_docx()
+    fuzz()
+    exit()
