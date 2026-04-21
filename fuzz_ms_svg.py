@@ -157,6 +157,22 @@ def handle_popups():
     except:
         pass
 
+# This is a helper to just kill all the word processes after a crash such that we start from a clean slate...
+def kill_all_word():
+    print("[!] Killing all WINWORD processes...")
+    
+    try:
+        subprocess.run(
+            ["taskkill", "/IM", "WINWORD.EXE", "/F"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+    except Exception as e:
+        print("kill error:", e)
+
+    # small delay to let Windows clean up
+    time.sleep(1.5)
+
 # === RUN TARGET ===
 def run_program():
     proc = subprocess.Popen(COVERAGE_CMD)
@@ -175,7 +191,10 @@ def run_program():
             print("abnormal exit")
             dst = CRASHES_DIRECTORY + str(random.randrange(10_000_000)) + ".docx"
             shutil.copy(FUZZ_INPUT, dst)
+            kill_all_word()
+            
             # exit(1)
+
             return True # Crash, so skip coverage detection...
     except subprocess.TimeoutExpired:
         proc.kill()
@@ -244,7 +263,7 @@ def fuzz():
 
         iteration += 1
 
-        if iteration % 10 == 0:
+        if iteration % 1 == 0:
             save_state()
 
 # === MAIN ===
