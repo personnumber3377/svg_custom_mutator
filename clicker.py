@@ -19,20 +19,38 @@ CLICK_DELAY = 1.0
 CHECKS = [
     {
         "name": "Dialog1",
+        "check_pos": (781, 440), # (810, 513), # x=810, y=513 # (807, 517),
+        "click_pos": (1079, 541), # (1101, 620),
+    },
+    {
+        "name": "Dialogpaska",
         "check_pos": (810, 513), # x=810, y=513 # (807, 517),
         "click_pos": (1101, 620),
     },
     {
+        "name": "Dialogpaska",
+        "check_pos": (810, 513+60), # x=810, y=513 # (807, 517),
+        "click_pos": (1101, 620+60),
+    },
+    {
         "name": "Dialog2",
-        "check_pos": (972, 592),
-        "click_pos": (927, 596),
+        "check_pos": (956, 653), # (972, 592),
+        "click_pos": (927, 660), # (927, 596),
     },
     {
         "name": "Dialog3",
         "check_pos": (1098, 565),
         "click_pos": (1026, 567),
+    },
+    {
+        "name": "Dialog3",
+        "check_pos": (1098, 565+60),
+        "click_pos": (1026, 567+60),
     }
 ]
+
+# 1101, y=628
+# 1101, y=628
 
 # === HELPER ===
 
