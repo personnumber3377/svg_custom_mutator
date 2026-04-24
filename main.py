@@ -15,6 +15,8 @@ AUTO_ATTR_TYPES = auto_meta.ATTR_TYPES
 AUTO_ATTR_ENUMS = auto_meta.ATTR_ENUMS
 AUTO_ATTR_SAMPLES = auto_meta.ATTR_SAMPLES
 
+MAX_NODES = 1000 # Maximum number of nodes to iterate over...
+
 '''
 except Exception:
     AUTO_SVG_TAGS = []
@@ -299,16 +301,41 @@ def random_text() -> str:
 
 def collect_ids(root):
     ids = []
-    for e in root.iter():
+    for i, e in enumerate(root.iter()):
+        if i >= MAX_NODES:
+            break
         if "id" in e.attrib:
             ids.append(e.attrib["id"])
     return ids
 
+# This is to avoid slowing down due to unbounded iteration of the elements in the tree...
+def count_nodes(root, max_nodes=MAX_NODES):
+    count = 0
+    for _ in root.iter():
+        count += 1
+        if count > max_nodes:
+            print("[!] Node limit exceeded")
+            return count
+    return count
+'''
 def all_nodes(root):
+    print(ET.tostring(root))
     return list(root.iter())
+'''
+
+def all_nodes(root, max_nodes=MAX_NODES):
+    nodes = []
+    for i, node in enumerate(root.iter()):
+        if i >= max_nodes:
+            print("[!] all_nodes truncated at", max_nodes)
+            break
+        nodes.append(node)
+    return nodes
 
 def find_parent(root, target):
-    for p in root.iter():
+    for i, p in enumerate(root.iter()):
+        if i >= MAX_NODES:
+            break
         for c in list(p):
             if c is target:
                 return p
