@@ -11,6 +11,11 @@ import time
 import pickle
 
 # === CONFIG ===
+
+# To gather a corpus or to try to find crashes?
+# "crash" / "coverage"
+MODE = "crash"
+
 TEMPLATE_DOCX = "template.docx"
 OUTPUT_DOCX   = "fuzzed.docx"
 FUZZ_INPUT = "C:\\Users\\elsku\\svg_custom_mutator\\fuzzed.docx"
@@ -41,11 +46,20 @@ COVERAGE_CMD = [
     FUZZ_INPUT
 ]
 
+
+# This is mainly for actual crash discovery since the coverage mechanism hides a lot of crashes for some reason...
+NO_COVERAGE_CMD = [
+    "C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE",
+    "/n",
+    "/q",
+    FUZZ_INPUT
+]
+
 # === RUNTIME CONFIG ===
 SCROLL_DOWN_AMOUNT = -500
 STEPS = 50
 TIME_STEP = 0.01
-PROC_TIMEOUT = 100.0
+PROC_TIMEOUT = 30.0
 
 # === GLOBAL STATE ===
 coverage = set()
@@ -114,7 +128,30 @@ def generate_svgs(media_dir):
         else:
             base_svg = random.choice(initial_corpus)
 
-        mutated = main.mutate_main(base_svg)
+        success = False
+        count = 0
+        '''
+        while success == False:
+            try:
+                count += 1
+                if count == 20: # 20 tries, then just give up...
+                    mutated = base_svg
+                    success = True
+                else:
+                    mutated = main.mutate_main(base_svg)
+                    success = True
+            except:
+                continue
+        '''
+
+        try:
+
+            mutated = main.mutate_main(base_svg)
+            success = True
+        except:
+            # continue
+            mutated = base_svg
+
 
         with open(out_svg, "wb") as fh:
             fh.write(mutated)
@@ -128,13 +165,13 @@ def generate_svgs(media_dir):
 def build_fuzzed_docx():
     with tempfile.TemporaryDirectory() as tmpdir:
         tmpdir = Path(tmpdir)
-
+        print("[+] Unzipping the template docx...")
         unzip_docx(TEMPLATE_DOCX, tmpdir)
 
         media_dir = tmpdir / WORD_MEDIA_DIR
-
+        print("[+] Generating the svg files...")
         _, svg_group = generate_svgs(media_dir)
-
+        print("[+] Zipping the docx back...")
         zip_docx(tmpdir, OUTPUT_DOCX)
 
         print(f"[+] Generated {OUTPUT_DOCX}")
@@ -158,6 +195,7 @@ def handle_popups():
         pass
 
 # This is a helper to just kill all the word processes after a crash such that we start from a clean slate...
+'''
 def kill_all_word():
     print("[!] Killing all WINWORD processes...")
     
@@ -172,40 +210,30 @@ def kill_all_word():
 
     # small delay to let Windows clean up
     time.sleep(0.5)
-
-# === RUN TARGET ===
 '''
-def run_program():
-    proc = subprocess.Popen(COVERAGE_CMD)
+
+def kill_all_word():
+    print("[!] Killing all WINWORD processes...")
 
     try:
-        for i in range(STEPS):
-            handle_popups()
-            pyautogui.scroll(SCROLL_DOWN_AMOUNT)
-            time.sleep(TIME_STEP)
+        subprocess.run(
+            ["taskkill", "/IM", "WINWORD.EXE", "/F", "/T"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+    except Exception as e:
+        print("kill error:", e)
 
-        rc = proc.wait(timeout=PROC_TIMEOUT)
+    time.sleep(1.0)  # increase delay
+    print("[+] Returned from the kill_all_word function!")
 
-        print("return code:", rc)
-
-        if rc != 0:
-            print("abnormal exit")
-            dst = CRASHES_DIRECTORY + str(random.randrange(10_000_000)) + "_" + str(hex(rc))[2:] + ".docx"
-            shutil.copy(FUZZ_INPUT, dst)
-            kill_all_word()
-
-            # exit(1)
-
-            return True # Crash, so skip coverage detection...
-    except subprocess.TimeoutExpired:
-        proc.kill()
-        return False
-    return False
-'''
+# === RUN TARGET ===
 
 def run_program():
+    cmd = COVERAGE_CMD if MODE == "coverage" else NO_COVERAGE_CMD
+
     proc = subprocess.Popen(
-        COVERAGE_CMD,
+        cmd,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         text=True,
@@ -218,44 +246,55 @@ def run_program():
     try:
         start_time = time.time()
 
-        # Read output line-by-line while running UI loop
         while True:
-            # Read available output without blocking forever
-            line = proc.stdout.readline()
+            # === READ OUTPUT (if available) ===
+            if proc.stdout and MODE == "coverage": # Check for coverage mode here...
+                line = proc.stdout.readline()
+                if line:
+                    print(line.strip())
 
-            if line:
-                print(line.strip())
+                    if (
+                        "Process crashed" in line or
+                        "Exception at address" in line or
+                        "Access address" in line
+                    ):
+                        crash_detected = True
+                        crash_info.append(line.strip())
 
-                # === CRASH DETECTION ===
-                if (
-                    "Process crashed" in line or
-                    "Exception at address" in line or
-                    "Access address" in line
-                ):
-                    crash_detected = True
-                    crash_info.append(line.strip())
-
-            # UI interaction loop (unchanged behavior)
+            # === UI INTERACTION ===
             handle_popups()
             pyautogui.scroll(SCROLL_DOWN_AMOUNT)
 
-            # Timeout handling
+            # === TIMEOUT (CRITICAL IN CRASH MODE) ===
             if time.time() - start_time > PROC_TIMEOUT:
-                raise subprocess.TimeoutExpired(proc.args, PROC_TIMEOUT)
+                print("[!] Timeout hit -> killing process")
+                proc.kill()
+                kill_all_word()
 
-            # Check if process ended
+                # Timeout = interesting in crash mode
+                '''
+                if MODE == "crash":
+                    dst = (
+                        CRASHES_DIRECTORY +
+                        str(random.randrange(10_000_000)) +
+                        "_timeout.docx"
+                    )
+                    shutil.copy(FUZZ_INPUT, dst)
+                '''
+                return True
+
+            # === PROCESS EXIT CHECK ===
             if proc.poll() is not None:
                 break
 
             time.sleep(TIME_STEP)
 
         rc = proc.wait()
-
         print("return code:", rc)
 
-        # === HANDLE CRASH ===
+        # === CRASH DETECTION ===
         if crash_detected:
-            print("[!!!] CRASH DETECTED VIA OUTPUT")
+            print("[!!!] CRASH DETECTED")
 
             suffix = "_".join(crash_info).replace(" ", "_")[:100]
 
@@ -267,14 +306,12 @@ def run_program():
             )
 
             shutil.copy(FUZZ_INPUT, dst)
-
             kill_all_word()
-
             return True
 
-        # === FALLBACK: abnormal exit ===
+        # === NON-ZERO EXIT ===
         if rc != 0:
-            print("abnormal exit")
+            print("[!] abnormal exit")
 
             dst = (
                 CRASHES_DIRECTORY +
@@ -284,17 +321,13 @@ def run_program():
             )
 
             shutil.copy(FUZZ_INPUT, dst)
-
             kill_all_word()
-
             return True
 
-    except subprocess.TimeoutExpired:
-        print("[!] Timeout detected")
-
+    except Exception as e:
+        print("run error:", e)
         proc.kill()
         kill_all_word()
-
         return True
 
     return False
@@ -345,24 +378,33 @@ def fuzz():
     iteration = 0
 
     while True:
+        print("[+] Killing word")
         kill_all_word()
+        print("[+] Building word document...")
         svg_group = build_fuzzed_docx()
-        if run_program():
-            # Skip coverage detection...
-            continue
+        print("[+] Running the microsoft word program...")
+        crashed = run_program()
 
-        print("Checking coverage...")
+        if MODE == "coverage":
+            if crashed:
+                continue
 
-        if update_coverage_and_is_interesting():
-            print("[+] Interesting sample found!")
-            print("Coverage size:", len(coverage))
+            print("Checking coverage...")
 
-            interesting_corpus.append(svg_group)
-            save_docx_copy()
+            if update_coverage_and_is_interesting():
+                print("[+] Interesting sample found!")
+                print("Coverage size:", len(coverage))
+
+                interesting_corpus.append(svg_group)
+                save_docx_copy()
+
+        else:  # CRASH MODE
+            # No coverage logic
+            pass
 
         iteration += 1
 
-        if iteration % 1 == 0:
+        if iteration % 10 == 0:
             save_state()
 
 # === MAIN ===
@@ -370,3 +412,7 @@ if __name__ == "__main__":
     initial_corpus = load_initial_corpus()
     load_state()
     fuzz()
+
+
+# This stuff is for the clicker...
+# Check if x=735, y=543 is blue and then if yes, then click on x=1206, y=733

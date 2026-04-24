@@ -15,7 +15,7 @@ CLICK_DELAY = 1.0
 
 # x=1099, y=568
 
-
+# Check if x=735, y=543 is blue and then if yes, then click on x=1206, y=733
 CHECKS = [
     {
         "name": "Dialog1",
@@ -46,6 +46,11 @@ CHECKS = [
         "name": "Dialog3",
         "check_pos": (1098, 565+60),
         "click_pos": (1026, 567+60),
+    },
+    {
+        "name": "Dialog3fefeffefe",
+        "check_pos": (735, 543),
+        "click_pos": (1206, 733),
     }
 ]
 
