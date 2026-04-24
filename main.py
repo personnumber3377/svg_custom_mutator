@@ -182,6 +182,52 @@ for attr, vals in {
 
 IDREF_ATTRS = {"href", "xlink:href", "filter", "clip-path", "mask", "marker-start", "marker-mid", "marker-end", "fill", "stroke"}
 
+# Generic string mutator...
+def mutate_string(s: str) -> str:
+    if not s:
+        return random.choice(string.printable) * 1000
+
+    s = list(s)
+    ops = ["flip", "insert", "delete", "dup", "swap", "num", "token"]
+    op = random.choice(ops)
+
+    i = random.randrange(len(s))
+
+    if op == "flip":
+        # flip one character
+        s[i] = chr(random.randrange(32, 127))
+
+    elif op == "insert":
+        # insert random substring
+        insert = "".join(random.choice(string.printable) for _ in range(random.randint(1, 8)))
+        s.insert(i, insert)
+
+    elif op == "delete":
+        # delete a chunk
+        del s[i:i + random.randint(1, 4)]
+
+    elif op == "dup":
+        # duplicate a slice
+        j = random.randrange(len(s))
+        if i < j:
+            s[i:j] = s[i:j] * 2
+
+    elif op == "swap":
+        # swap two chars
+        j = random.randrange(len(s))
+        s[i], s[j] = s[j], s[i]
+
+    elif op == "num":
+        # replace with extreme number
+        s[i] = random.choice(["0", "-1", "1e309", "-1e309", "999999999999999999999"])
+
+    elif op == "token":
+        # inject interesting tokens
+        tokens = ["<svg>", "</svg>", "url(#id)", "NaN", "Infinity", "%s", "../../"]
+        s.insert(i, random.choice(tokens))
+
+    return "".join(s)
+
 def qname(tag: str) -> str:
     return f"{{{NS}}}{tag}"
 
@@ -238,7 +284,7 @@ def rand_transform() -> str:
 
 def rand_path() -> str:
     out = []
-    for _ in range(random.randint(1, 12)):
+    for _ in range(random.randint(1, 1000)): # Make really long paths as default...
         cmd = random.choice(PATH_CMDS)
         argc = {
             "M":2,"m":2,"L":2,"l":2,"H":1,"h":1,"V":1,"v":1,
@@ -292,10 +338,14 @@ def rand_style() -> str:
         props.append(f"{p}:{v}")
     return ";".join(props) + ";"
 
-def random_text() -> str:
+def random_text(original_text: str) -> str:
+    if random.random() < 0.80: # 80 percent chance to just mutate the string...
+        mut_string = mutate_string(original_text)
+        print(mut_string)
+        return mut_string
     choices = [
         "hello", "text", "svg", "filter", "pattern", "A", "😀", "مرحبا",
-        "こんにちは", "specular", "convolve", "matrix", "".join(random.choice(string.printable) for _ in range(random.randint(0, 30)))
+        "こんにちは", "specular", "convolve", "matrix", "".join(random.choice(string.printable) for _ in range(random.randint(0, 3000)))
     ]
     return random.choice(choices)
 
@@ -527,7 +577,7 @@ def build_node_from_scratch(tag: str, context):
     set_required_attrs(elem, tag, context)
 
     if tag in {"text", "tspan"}:
-        elem.text = random_text()
+        elem.text = random_text(elem.text)
 
     if tag in {"linearGradient", "radialGradient"}:
         for _ in range(random.randint(1, 5)):
@@ -705,20 +755,20 @@ def inject_pattern_system(root, context):
 
 def mutate_text(elem):
     if elem.text is None:
-        elem.text = random_text()
+        elem.text = random_text(elem.text)
     else:
         s = elem.text
         if not s:
-            elem.text = random_text()
+            elem.text = random_text(elem.text)
             return
         mode = random.randrange(4)
         if mode == 0 and len(s) > 0:
             i = random.randrange(len(s))
             elem.text = s[:i] + random.choice(string.printable) + s[i+1:]
         elif mode == 1:
-            elem.text += random_text()
+            elem.text += random_text(elem.text)
         elif mode == 2:
-            elem.text = random_text()
+            elem.text = random_text(elem.text)
         else:
             elem.text = ""
 
@@ -789,6 +839,17 @@ def single_mutation(root, context):
     elif op == "repair_refs":
         repair_references(root, context)
 
+# This is because of the shit...
+def safe_tostring(root, max_nodes=MAX_NODES):
+    count = 0
+    for _ in root.iter():
+        count += 1
+        if count > max_nodes:
+            print("[!] Too many nodes, skipping serialization")
+            return None
+
+    return ET.tostring(root, encoding="utf-8", short_empty_elements=True)
+
 def mutate_main(in_bytes: bytes) -> bytes:
     try:
         s = in_bytes.decode("utf-8", errors="ignore")
@@ -814,7 +875,11 @@ def mutate_main(in_bytes: bytes) -> bytes:
 
     repair_references(root, context)
 
-    out = ET.tostring(root, encoding="utf-8", short_empty_elements=True)
+    # out = ET.tostring(root, encoding="utf-8", short_empty_elements=True)
+
+    out = safe_tostring(root)
+    if out is None:
+        return in_bytes
 
     # scrub namespace pollution from ElementTree
     out = out.replace(b"</ns0:", b"</")

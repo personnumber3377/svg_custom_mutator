@@ -51,7 +51,7 @@ def find_svgs(root_dir):
 
 
 def test_svg(svg_path):
-    print(f"[+] Testing SVG: {svg_path}")
+    # print(f"[+] Testing SVG: {svg_path}")
 
     with open(svg_path, "rb") as f:
         data = f.read()
@@ -65,7 +65,7 @@ def test_svg(svg_path):
         elapsed = time.time() - start
         signal.alarm(0)
 
-        print(f"[+] Mutation OK ({elapsed:.2f}s)")
+        # print(f"[+] Mutation OK ({elapsed:.2f}s)")
 
     except TimeoutException:
         print("[!!!] HANG DETECTED")
