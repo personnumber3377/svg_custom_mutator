@@ -51,8 +51,15 @@ CHECKS = [
         "name": "Dialog3fefeffefe",
         "check_pos": (735, 543),
         "click_pos": (1206, 733),
+    },
+    {
+        "name": "fefefefeefeffe",
+        "check_pos": (1167, 643),
+        "click_pos": (1170, 642),
     }
 ]
+
+# x=1167, y=643 blue then click on x=1170, y=642
 
 # 1101, y=628
 # 1101, y=628

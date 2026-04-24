@@ -324,6 +324,21 @@ def run_program():
             kill_all_word()
             return True
 
+        # If the file returns with zero, but without timing out, then it may also be an indicative of a problem...
+
+        print("[!] exited even though shouldn't")
+
+        dst = (
+            CRASHES_DIRECTORY +
+            str(random.randrange(10_000_000)) +
+            "_" + str(hex(rc))[2:] + "_zeroreturn" +
+            ".docx"
+        )
+
+        shutil.copy(FUZZ_INPUT, dst)
+        kill_all_word()
+        return True
+
     except Exception as e:
         print("run error:", e)
         proc.kill()
