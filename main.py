@@ -210,7 +210,7 @@ def mutate_string(s: str) -> str:
         # duplicate a slice
         j = random.randrange(len(s))
         if i < j:
-            s[i:j] = s[i:j] * 2
+            s[i:j] = s[i:j] * random.randrange(1, 100) #  * 2
 
     elif op == "swap":
         # swap two chars
