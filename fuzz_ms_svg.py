@@ -59,12 +59,32 @@ NO_COVERAGE_CMD = [
 SCROLL_DOWN_AMOUNT = -500
 STEPS = 50
 TIME_STEP = 0.01
-PROC_TIMEOUT = 30.0
+PROC_TIMEOUT = 40.0 # 30.0
 
 # === GLOBAL STATE ===
 coverage = set()
 interesting_corpus = []
 initial_corpus = []
+
+def wait_until_unlocked(path, timeout=5.0):
+    start = time.time()
+    while time.time() - start < timeout:
+        try:
+            with open(path, "ab"):
+                return True
+        except PermissionError:
+            time.sleep(0.2)
+    return False
+
+def safe_copy(src, dst, retries=10, delay=0.5):
+    for attempt in range(retries):
+        try:
+            shutil.copy(src, dst)
+            return
+        except PermissionError:
+            print(f"[!] Copy failed (locked), retry {attempt+1}")
+            time.sleep(delay)
+    print("[!] Copy failed permanently")
 
 # === LOAD INITIAL CORPUS INTO MEMORY ===
 def load_initial_corpus():
@@ -101,7 +121,7 @@ def load_state():
 def unzip_docx(docx_path, extract_dir):
     with zipfile.ZipFile(docx_path, 'r') as zip_ref:
         zip_ref.extractall(extract_dir)
-
+'''
 def zip_docx(folder, output_path):
     with zipfile.ZipFile(output_path, 'w', zipfile.ZIP_DEFLATED) as docx:
         for root, dirs, files in os.walk(folder):
@@ -109,6 +129,24 @@ def zip_docx(folder, output_path):
                 full_path = os.path.join(root, file)
                 rel_path = os.path.relpath(full_path, folder)
                 docx.write(full_path, rel_path)
+'''
+
+def zip_docx(folder, output_path, retries=10, delay=0.5):
+    for attempt in range(retries):
+        try:
+            with zipfile.ZipFile(output_path, 'w', zipfile.ZIP_DEFLATED) as docx:
+                for root, dirs, files in os.walk(folder):
+                    for file in files:
+                        full_path = os.path.join(root, file)
+                        rel_path = os.path.relpath(full_path, folder)
+                        docx.write(full_path, rel_path)
+            return  # success
+
+        except PermissionError as e:
+            print(f"[!] Permission denied writing {output_path}, retry {attempt+1}/{retries}")
+            time.sleep(delay)
+
+    raise RuntimeError(f"Failed to write {output_path} after retries")
 
 # === SVG GENERATION ===
 def generate_svgs(media_dir):
@@ -269,6 +307,7 @@ def run_program():
             if time.time() - start_time > PROC_TIMEOUT:
                 print("[!] Timeout hit -> killing process")
                 proc.kill()
+                proc.wait(timeout=2)
                 kill_all_word()
 
                 # Timeout = interesting in crash mode
@@ -279,7 +318,7 @@ def run_program():
                         str(random.randrange(10_000_000)) +
                         "_timeout.docx"
                     )
-                    shutil.copy(FUZZ_INPUT, dst)
+                    safe_copy(FUZZ_INPUT, dst)
                 '''
                 return True
 
@@ -305,7 +344,7 @@ def run_program():
                 ".docx"
             )
 
-            shutil.copy(FUZZ_INPUT, dst)
+            safe_copy(FUZZ_INPUT, dst)
             kill_all_word()
             return True
 
@@ -320,7 +359,7 @@ def run_program():
                 ".docx"
             )
 
-            shutil.copy(FUZZ_INPUT, dst)
+            safe_copy(FUZZ_INPUT, dst)
             kill_all_word()
             return True
 
@@ -335,13 +374,14 @@ def run_program():
             ".docx"
         )
 
-        shutil.copy(FUZZ_INPUT, dst)
+        safe_copy(FUZZ_INPUT, dst)
         kill_all_word()
         return True
 
     except Exception as e:
         print("run error:", e)
         proc.kill()
+        proc.wait(timeout=2)
         kill_all_word()
         return True
 
@@ -386,7 +426,7 @@ def update_coverage_and_is_interesting():
 # === SAVE INTERESTING DOCX ===
 def save_docx_copy():
     dst = INTERESTING_DIRECTORY + str(random.randrange(10_000_000)) + ".docx"
-    shutil.copy(FUZZ_INPUT, dst)
+    safe_copy(FUZZ_INPUT, dst)
 
 # === FUZZ LOOP ===
 def fuzz():
@@ -395,6 +435,8 @@ def fuzz():
     while True:
         print("[+] Killing word")
         kill_all_word()
+        print("[+] Waiting for unlocked...")
+        wait_until_unlocked(OUTPUT_DOCX)
         print("[+] Building word document...")
         svg_group = build_fuzzed_docx()
         print("[+] Running the microsoft word program...")
