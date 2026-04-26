@@ -16,7 +16,22 @@ CLICK_DELAY = 1.0
 # x=1099, y=568
 
 # Check if x=735, y=543 is blue and then if yes, then click on x=1206, y=733
+
+# x=1171, y=642)   and then x=1066, y=644
+
+# x=955, y=700  and if yes, then x=846, y=685
+
 CHECKS = [
+    {
+        "name": "Haluatko silti avata sen...",
+        "check_pos": (1171, 642), # (810, 513), # x=810, y=513 # (807, 517),
+        "click_pos": (1066, 644), # (1101, 620),
+    },
+    {
+        "name": "Palauttaa tiedot jne..",
+        "check_pos": (955, 700), # (810, 513), # x=810, y=513 # (807, 517),
+        "click_pos": (846, 685), # (1101, 620),
+    },
     {
         "name": "Dialog1",
         "check_pos": (781, 440), # (810, 513), # x=810, y=513 # (807, 517),

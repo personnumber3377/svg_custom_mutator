@@ -182,6 +182,18 @@ for attr, vals in {
 
 IDREF_ATTRS = {"href", "xlink:href", "filter", "clip-path", "mask", "marker-start", "marker-mid", "marker-end", "fill", "stroke"}
 
+# This is just for logging...
+
+# Parse failures when fuzzing. This is for debugging the fuzzer itself...
+PARSE_FAIL_DIR = "C:\\Users\\elsku\\svg_parse_failures\\"
+os.makedirs(PARSE_FAIL_DIR, exist_ok=True)
+
+def log(string):
+    # Logs a string to the log file...
+    fh = open("C:\\Users\\elsku\\svg_mutator_log_thing.txt", "a+")
+    fh.write("[LOG] "+str(string)+"\n")
+    fh.close()
+
 # Generic string mutator...
 def mutate_string(s: str) -> str:
     if not s:
@@ -341,7 +353,7 @@ def rand_style() -> str:
 def random_text(original_text: str) -> str:
     if random.random() < 0.80: # 80 percent chance to just mutate the string...
         mut_string = mutate_string(original_text)
-        print(mut_string)
+        # print(mut_string)
         return mut_string
     choices = [
         "hello", "text", "svg", "filter", "pattern", "A", "😀", "مرحبا",
@@ -854,11 +866,24 @@ def mutate_main(in_bytes: bytes) -> bytes:
     try:
         s = in_bytes.decode("utf-8", errors="ignore")
         root = ET.fromstring(s)
+
+    except Exception as e:
+        log("Parse failure in mutate_main")
+        log(traceback.format_exc())
+
+        fname = PARSE_FAIL_DIR + str(random.randrange(10_000_000)) + ".svg"
+        with open(fname, "wb") as f:
+            f.write(in_bytes)
+
+        context = {"ids": []}
+        root = build_node_from_scratch("svg", context)
+
+    '''
     except Exception:
         # if parsing fails, sometimes just generate from scratch
         context = {"ids": []}
         root = build_node_from_scratch("svg", context)
-
+    '''
     context = {"ids": collect_ids(root)}
     root = ensure_root(root, context)
 
@@ -889,6 +914,140 @@ def mutate_main(in_bytes: bytes) -> bytes:
 
     return out
 
+def merge_defs(root_a, root_b):
+    defs_a = [n for n in all_nodes(root_a) if strip_ns(n.tag) == "defs"]
+    defs_b = [n for n in all_nodes(root_b) if strip_ns(n.tag) == "defs"]
+
+    if not defs_b:
+        return
+
+    if not defs_a:
+        new_defs = ET.Element(qname("defs"))
+        root_a.insert(0, new_defs)
+        defs_a = [new_defs]
+
+    target_defs = random.choice(defs_a)
+
+    for d in defs_b:
+        for child in list(d):
+            target_defs.append(copy.deepcopy(child))
+
+def crossover_attributes(elem_a, elem_b):
+    for k, v in elem_b.attrib.items():
+        if random.random() < 0.5:
+            elem_a.attrib[k] = v
+
+# Crossover...
+
+def activate_all_features(root, context):
+    ids = collect_ids(root)
+
+    drawables = [
+        n for n in all_nodes(root)
+        if strip_ns(n.tag) in {"rect","circle","path","g","text"}
+    ]
+
+    for elem in drawables:
+        if random.random() < 0.5:
+            elem.attrib["filter"] = make_url_ref(context)
+
+        if random.random() < 0.5:
+            elem.attrib["clip-path"] = make_url_ref(context)
+
+        if random.random() < 0.5:
+            elem.attrib["mask"] = make_url_ref(context)
+
+        if random.random() < 0.5:
+            elem.attrib["transform"] = rand_transform()
+
+def crossover_svg(svg_a_bytes, svg_b_bytes):
+    try:
+        root_a = ET.fromstring(svg_a_bytes.decode("utf-8", "ignore"))
+        root_b = ET.fromstring(svg_b_bytes.decode("utf-8", "ignore"))
+    except:
+        log("Parse failure in crossover_svg")
+        log(traceback.format_exc())
+
+        fname = PARSE_FAIL_DIR + str(random.randrange(10_000_000)) + "_a.svg"
+        with open(fname, "wb") as f:
+            f.write(svg_a_bytes)
+
+        fname = PARSE_FAIL_DIR + str(random.randrange(10_000_000)) + "_b.svg"
+        with open(fname, "wb") as f:
+            f.write(svg_b_bytes)
+
+        return svg_a_bytes
+        # return svg_a_bytes  # fallback
+
+    context = {"ids": collect_ids(root_a)}
+
+    nodes_a = all_nodes(root_a)
+    nodes_b = all_nodes(root_b)
+
+    if not nodes_a or not nodes_b:
+        return svg_a_bytes
+
+    # Subtree crossover
+    donor = copy.deepcopy(random.choice(nodes_b))
+    target = random.choice(nodes_a)
+
+    try:
+        target.append(donor)
+    except:
+        pass
+
+    # --------------------------------------------------
+    # 2. ATTRIBUTE-LEVEL CROSSOVER
+    # --------------------------------------------------
+    for _ in range(random.randint(5, 20)):
+        elem_a = random.choice(nodes_a)
+        elem_b = random.choice(nodes_b)
+
+        crossover_attributes(elem_a, elem_b)
+
+    # --------------------------------------------------
+    # 3. PARTIAL ATTRIBUTE BLENDING (MORE CHAOTIC)
+    # --------------------------------------------------
+    for _ in range(random.randint(5, 20)):
+        elem_a = random.choice(nodes_a)
+        elem_b = random.choice(nodes_b)
+
+        for k in elem_b.attrib:
+            if random.random() < 0.3:
+                # either copy value OR mutate it slightly
+                if random.random() < 0.5:
+                    elem_a.attrib[k] = elem_b.attrib[k]
+                else:
+                    elem_a.attrib[k] = mutate_string(elem_b.attrib[k])
+
+    # --------------------------------------------------
+    # 4. MERGE <defs> (CRITICAL FOR SVG SEMANTICS)
+    # --------------------------------------------------
+    merge_defs(root_a, root_b)
+
+    # --------------------------------------------------
+    # 5. RANDOMLY ATTACH FILTERS / REFERENCES FROM B
+    # --------------------------------------------------
+    if random.random() < 0.5:
+        ids_b = collect_ids(root_b)
+        if ids_b:
+            for elem in nodes_a:
+                if random.random() < 0.2:
+                    elem.attrib["filter"] = f"url(#{random.choice(ids_b)})"
+
+    # --------------------------------------------------
+    # 6. ACTIVATE FEATURES (VERY IMPORTANT)
+    # --------------------------------------------------
+    if random.random() < 0.5:
+        activate_all_features(root_a, context)
+
+    # --------------------------------------------------
+    # 7. REPAIR REFERENCES
+    # --------------------------------------------------
+    repair_references(root_a, context)
+
+    out = safe_tostring(root_a)
+    return out if out is not None else svg_a_bytes
 
 if __name__ == "__main__":
     import sys

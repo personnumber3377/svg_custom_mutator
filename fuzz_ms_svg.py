@@ -9,12 +9,15 @@ import random
 import pyautogui
 import time
 import pickle
+import traceback
 
 # === CONFIG ===
 
 # To gather a corpus or to try to find crashes?
 # "crash" / "coverage"
-MODE = "crash"
+MODE = "coverage"
+
+# MODE = "crash"
 
 TEMPLATE_DOCX = "template.docx"
 OUTPUT_DOCX   = "fuzzed.docx"
@@ -65,6 +68,12 @@ PROC_TIMEOUT = 40.0 # 30.0
 coverage = set()
 interesting_corpus = []
 initial_corpus = []
+
+def log(string):
+    # Logs a string to the log file...
+    fh = open("C:\\Users\\elsku\\svg_mutator_log_thing.txt", "a+")
+    fh.write("[LOG] "+str(string)+"\n")
+    fh.close()
 
 def wait_until_unlocked(path, timeout=5.0):
     start = time.time()
@@ -168,24 +177,44 @@ def generate_svgs(media_dir):
 
         success = False
         count = 0
-        '''
-        while success == False:
-            try:
-                count += 1
-                if count == 20: # 20 tries, then just give up...
-                    mutated = base_svg
-                    success = True
-                else:
-                    mutated = main.mutate_main(base_svg)
-                    success = True
-            except:
-                continue
-        '''
 
         try:
 
-            mutated = main.mutate_main(base_svg)
-            success = True
+            # mutated = main.mutate_main(base_svg)
+
+            # Also use crossover too...
+
+            if random.random() < 0.3:
+                # --- CROSSOVER ---
+                if use_interesting and len(interesting_corpus) > 0:
+                    other_group = random.choice(interesting_corpus)
+                    other_svg = random.choice(other_group)
+                else:
+                    other_svg = random.choice(initial_corpus)
+
+                try:
+                    mutated = main.crossover_svg(base_svg, other_svg)
+                except Exception as e:
+                    log(str(e)) # Log the exception...
+                    log("Back trace:")
+                    tb = traceback.format_exc()
+                    log(tb)
+                    print("Got this exception here on crossover: "+str(e))
+                    mutated = base_svg
+
+            else:
+                # --- NORMAL MUTATION ---
+                try:
+                    mutated = main.mutate_main(base_svg)
+                except Exception as e:
+                    log(str(e)) # Log the exception...
+                    log("Back trace:")
+                    tb = traceback.format_exc()
+                    log(tb)
+                    print("Got this exception here on normal mutation: "+str(e))
+                    mutated = base_svg
+
+                success = True
         except:
             # continue
             mutated = base_svg
@@ -364,19 +393,20 @@ def run_program():
             return True
 
         # If the file returns with zero, but without timing out, then it may also be an indicative of a problem...
+        if MODE == "crash": # Only check in the crash mode...
+            print("[!] exited even though shouldn't")
 
-        print("[!] exited even though shouldn't")
+            dst = (
+                CRASHES_DIRECTORY +
+                str(random.randrange(10_000_000)) +
+                "_" + str(hex(rc))[2:] + "_zeroreturn" +
+                ".docx"
+            )
 
-        dst = (
-            CRASHES_DIRECTORY +
-            str(random.randrange(10_000_000)) +
-            "_" + str(hex(rc))[2:] + "_zeroreturn" +
-            ".docx"
-        )
-
-        safe_copy(FUZZ_INPUT, dst)
-        kill_all_word()
-        return True
+            safe_copy(FUZZ_INPUT, dst)
+            kill_all_word()
+            return True
+        return False
 
     except Exception as e:
         print("run error:", e)
@@ -441,7 +471,7 @@ def fuzz():
         svg_group = build_fuzzed_docx()
         print("[+] Running the microsoft word program...")
         crashed = run_program()
-
+        print("Crashed: "+str(crashed))
         if MODE == "coverage":
             if crashed:
                 continue
