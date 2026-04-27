@@ -69,6 +69,24 @@ coverage = set()
 interesting_corpus = []
 initial_corpus = []
 
+# This stuff here is for generating the coverage report into my email...
+import time
+
+START_TIME = time.time()
+COVERAGE_LOG = "coverage_log.csv"
+
+iterations = 0
+
+def log_coverage():
+    elapsed = int(time.time() - START_TIME)
+    # cov_size = len(coverage)
+
+    with open(COVERAGE_LOG, "a") as f:
+        # f.write(f"{elapsed},{cov_size}\n")
+        # iterations
+        cov_size = len(coverage)
+        f.write(f"{elapsed},{cov_size},{iterations}\n")
+
 def log(string):
     # Logs a string to the log file...
     fh = open("C:\\Users\\elsku\\svg_mutator_log_thing.txt", "a+")
@@ -461,8 +479,11 @@ def save_docx_copy():
 # === FUZZ LOOP ===
 def fuzz():
     iteration = 0
-
+    global iterations
     while True:
+        # iterations += 1
+        log_coverage()
+
         print("[+] Killing word")
         kill_all_word()
         print("[+] Waiting for unlocked...")
@@ -471,6 +492,8 @@ def fuzz():
         svg_group = build_fuzzed_docx()
         print("[+] Running the microsoft word program...")
         crashed = run_program()
+        if not crashed:
+            iterations += 1
         print("Crashed: "+str(crashed))
         if MODE == "coverage":
             if crashed:

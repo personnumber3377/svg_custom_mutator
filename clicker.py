@@ -21,7 +21,21 @@ CLICK_DELAY = 1.0
 
 # x=955, y=700  and if yes, then x=846, y=685
 
+# Point(x=816, y=522) and then if yes, then   Point(x=1136, y=616)
+
+# Then the recover data stuff is Point(x=984, y=592)   and then Point(x=890, y=600)
+
 CHECKS = [
+    {
+        "name": "Fuzz machine 1",
+        "check_pos": (816, 522), # (810, 513), # x=810, y=513 # (807, 517),
+        "click_pos": (1136, 616), # (1101, 620),
+    },
+    {
+        "name": "Fuzz machine 2",
+        "check_pos": (984, 592), # (810, 513), # x=810, y=513 # (807, 517),
+        "click_pos": (890, 600), # (1101, 620),
+    },
     {
         "name": "Haluatko silti avata sen...",
         "check_pos": (1171, 642), # (810, 513), # x=810, y=513 # (807, 517),

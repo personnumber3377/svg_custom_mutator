@@ -3,6 +3,8 @@ import random
 import string
 import xml.etree.ElementTree as ET
 import re
+import os
+import traceback
 
 # Try to import generated metadata. If it does not exist, fallback.
 # try:
