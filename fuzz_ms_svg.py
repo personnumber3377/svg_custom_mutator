@@ -15,9 +15,10 @@ import traceback
 
 # To gather a corpus or to try to find crashes?
 # "crash" / "coverage"
-MODE = "coverage"
 
-# MODE = "crash"
+# MODE = "coverage"
+
+MODE = "crash"
 
 TEMPLATE_DOCX = "template.docx"
 OUTPUT_DOCX   = "fuzzed.docx"

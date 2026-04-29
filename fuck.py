@@ -7,6 +7,7 @@ RULES = [
     # ("recover data", "open"),
     ("serious error", "open"),
     ("safe mode", "no"),
+    ("the last time you opened", "yes"),
 ]
 
 SCAN_INTERVAL = 1.0

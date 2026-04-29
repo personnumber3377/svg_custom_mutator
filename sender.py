@@ -84,7 +84,7 @@ def main():
     send_email()
     print("[+] Email sent")
 
-WAIT_AMOUNT = 60 # 60*60*3 # Send email every three hours...
+WAIT_AMOUNT = 60*60 # 60*60*3 # Send email every three hours...
 
 if __name__ == "__main__":
     while True:
